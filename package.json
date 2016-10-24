@@ -1,6 +1,6 @@
 {
   "name": "scriptserver-update",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Updating module for scriptserver",
   "main": "index.js",
   "scripts": {},
@@ -18,7 +18,8 @@
     "fs-extra": "^0.30.0",
     "pfy": "^1.0.1",
     "request": "^2.75.0",
-    "scriptserver-command": "^0.1.1",
-    "scriptserver-json": "^0.1.0"
+    "scriptserver-command": "*",
+    "scriptserver-json": "*",
+    "scriptserver-util": "*"
   }
 }

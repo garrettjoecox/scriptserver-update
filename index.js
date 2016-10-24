@@ -10,6 +10,7 @@ module.exports = function() {
   let usedArgs;
 
   server.use(require('scriptserver-command'));
+  server.use(require('scriptserver-util'));
   server.use(require('scriptserver-json'));
 
   server._start = server.start;
@@ -26,9 +27,16 @@ module.exports = function() {
   }
 
   server.command('restart', e => {
-    server.stop();
+    server.util.isOp(e.player)
+      .then(isOp => {
+        if (isOp) {
+          server.stop();
 
-    server.start(usedJar, usedArgs);
+          return server.start(usedJar, usedArgs);
+        } else {
+          return server.util.tellRaw('You need to be op to restart the server!', e.player, { color: 'red' });
+        }
+      });
   });
 }
 
