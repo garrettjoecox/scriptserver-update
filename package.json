@@ -16,10 +16,14 @@
   "homepage": "https://github.com/garrettjoecox/scriptserver-update#readme",
   "dependencies": {
     "fs-extra": "^0.30.0",
+    "lodash.defaultsdeep": "^4.6.1",
     "pfy": "^1.0.1",
     "request": "^2.75.0",
-    "scriptserver-command": "*",
-    "scriptserver-json": "*",
-    "scriptserver-util": "*"
+    "scriptserver-command": "^1.0.1",
+    "scriptserver-json": "^1.0.1",
+    "scriptserver-util": "^1.2.0"
+  },
+  "peerDependencies": {
+    "scriptserver": "^1.2.0"
   }
 }

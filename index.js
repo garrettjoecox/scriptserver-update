@@ -2,12 +2,14 @@
 
 const fs = require('fs-extra');
 const pfy = require('pfy');
+const defaultsDeep = require('lodash.defaultsdeep');
 let server;
 
 module.exports = function() {
   server = this;
-  let usedJar;
-  let usedArgs;
+  server.config.update = defaultsDeep({}, server.config.update, {
+    track: 'snapshot',
+  });
 
   server.use(require('scriptserver-command'));
   server.use(require('scriptserver-util'));
@@ -15,15 +17,15 @@ module.exports = function() {
 
   server._start = server.start;
 
-  server.start = function(jar, args) {
-    usedJar = jar;
-    usedArgs = args;
-    if (jar === 'snapshot' || jar === 'release') {
-
-      update(jar)
-        .then(() => server._start('server.jar', args));
-
-    } else server._start(jar, args);
+  server.start = async function() {
+    try {
+      await update();
+    } catch (error) {
+      console.error('There was an error updating:', error.message);
+      console.error(error);
+    } finally {
+      server._start();
+    }
   }
 
   server.command('restart', e => {
@@ -32,7 +34,7 @@ module.exports = function() {
         if (isOp) {
           server.stop();
 
-          return server.start(usedJar, usedArgs);
+          return server.start();
         } else {
           return server.util.tellRaw('You need to be op to restart the server!', e.player, { color: 'red' });
         }
@@ -40,14 +42,14 @@ module.exports = function() {
   });
 }
 
-function update(channel) {
+function update() {
   let currentV;
 
   return server.JSON.get('version', 'id')
     .then(current => currentV = current)
     .then(() => request('https://launchermeta.mojang.com/mc/game/version_manifest.json'))
     .then(body => JSON.parse(body))
-    .then(body => request(body.versions.find(v => v.id === body.latest[channel]).url))
+    .then(body => request(body.versions.find(v => v.id === body.latest[server.config.update.track]).url))
     .then(body => JSON.parse(body))
     .then(body => {
       if (currentV !== body.id) {
